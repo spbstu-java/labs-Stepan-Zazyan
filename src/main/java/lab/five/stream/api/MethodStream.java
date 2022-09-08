@@ -20,21 +20,23 @@ public class MethodStream {
                 .collect(Collectors.toList());
     }
 
+    /*Переделать по условию*/
     public List<Double> squareInt(List<Integer> list) {
         return list.stream()
-                .distinct()
+                .filter(i -> Collections.frequency(list, i) == 1)
                 .map(s -> Math.pow(s, 2))
                 .collect(Collectors.toList());
     }
 
-    public List<String> sortStrings(List<String> list, char firstLetter) {
+    public List<String> sortStrings(Collection<String> list, char firstLetter) {
         return list.stream()
                 .sorted()
                 .filter(s -> s.startsWith(String.valueOf(firstLetter)))
                 .collect(Collectors.toList());
+
     }
 
-    public int getLastElement(List<Integer> list) throws NoSuchElementException {
+    public int getLastElement(Collection<Integer> list) throws NoSuchElementException {
         return list.stream()
                 .reduce((first, second) -> second)
                 .orElseThrow(() -> new NoSuchElementException("Пустая коллекция"));
@@ -50,7 +52,7 @@ public class MethodStream {
     public Map<Character, String> makeMap(List<String> list) {
         return list.stream()
                 .collect(Collectors.toMap(k -> k.charAt(0), v -> v.substring(1),
-                                (prev, curr) -> prev));
+                        (prev, curr) -> prev));
     }
 
     public static void main(String[] args) {
@@ -58,11 +60,11 @@ public class MethodStream {
         int[] arEmpty = {1, 3};
         int[] ar = {1, 2, 3, 4, 5};
         List<Integer> emptyList = new ArrayList<>();
-        List<Integer> listInt = Arrays.asList(5, 2, 5, 4, 5, 1);
+        List<Integer> listInt = Arrays.asList(5, 2, 5, 4, 5, 1, 1);
         List<String> listStr = Arrays.asList("one", "two", "three", "tennessy", "texas");
         System.out.println("Average: " + methodStream.averageList(listInt));
         System.out.println("To upper case: " + methodStream.addNewAndUpperCase(listStr));
-        System.out.println("Square unique: " + methodStream.squareInt(listInt));
+        System.out.println("Square non-repeated: " + methodStream.squareInt(listInt));
         System.out.println("Sorted strings: " + methodStream.sortStrings(listStr, 't'));
         System.out.println("Last element: " + methodStream.getLastElement(listInt));
         System.out.println("Сумма четных чисел в массиве: " + methodStream.sum(ar));
