@@ -1,8 +1,10 @@
 package second.lab.matrixes.console;
 
-import java.io.IOException;
+public class InputOutputException extends RuntimeException {
 
-public class InputOutputException extends IOException {
+    public InputOutputException() {
+        this(null);
+    }
     public InputOutputException(String message) {
         super(message);
     }

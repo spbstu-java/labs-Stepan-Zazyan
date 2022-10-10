@@ -1,163 +1,115 @@
 package second.lab.matrixes.console;
 
 import java.io.*;
-import java.text.DecimalFormat;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ConsoleMatrixes {
-    public static void main(String[] args) throws IOException {
-        String file = "/home/stepan/Computer engineering/5th Semester/Object-oriented programming/labs_Stepan_Zazyan/src/main/java/second/lab/matrixes/console/inputMatrixSize.txt";
-        checkIOFile(new File(file));
-        int arraySize = 0;
-        try {
-            BufferedReader reader =
-                    new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                arraySize = Integer.parseInt(line);
-                checkNum(arraySize);
-            }
-        } catch (InputOutputException | BigNumException e) {
-            e.printStackTrace();
-        }
-        System.out.println(arraySize);
-        Logger logger = Logger.getAnonymousLogger();
-/*        OutOfMemoryError eLog = new OutOfMemoryError();
-        logger.log(Level.SEVERE, "Логирование исключения по памяти", eLog);*/
-        DecimalFormat dF = new DecimalFormat("#.##");
-        FileWriter fileWriter = new FileWriter("/home/stepan/Computer engineering/5th Semester/Object-oriented programming/labs_Stepan_Zazyan/src/main/java/second/lab/matrixes/console/output.txt");
-        BufferedWriter outputWriter = new BufferedWriter(fileWriter);
-        try {
-            double[][] matrixOrig = new double[arraySize][arraySize];
-            double[][] matrixTemp = new double[arraySize][arraySize];
 
-            for (int i = 0; i < arraySize; i++) {
-                for (int j = 0; j < arraySize; j++) {
-                    matrixOrig[i][j] = (int) (Math.random() * arraySize * 2) - arraySize;
-                    System.out.print(matrixOrig[i][j] + " ");
-                }
-                System.out.println();
+    private static final Logger LOGGER = Logger.getLogger(ConsoleMatrixes.class.getName());
+
+    public int[][] readMatrix(String path) {
+        if (path == null || path.isBlank()) {
+            throw new InputOutputException();
+        }
+        File file = new File(path);
+        if (!file.exists() || !file.isFile() || !file.canRead()) {
+            throw new InputOutputException(path);
+        }
+        try (Scanner scanner = new Scanner(file)) {
+            int n = scanner.nextInt();
+            if (n < 1 || n > 1_000_000) {
+                throw new InputOutputException();
             }
-            try {
-                outputWriter.write("Поворот на 90 градусов");
-                outputWriter.newLine();
-            } catch (InputOutputException e) {
-                e.printStackTrace();
-            }
-            for (int i = 0; i < arraySize; i++) {
-                for (int j = 0; j < arraySize; j++) {
-                    try {
-                        if (j == 0) {
-                            matrixTemp[i][j] = (divide(matrixOrig[j][matrixOrig.length - i - 1], matrixOrig[i][j + 1]));
-                        } else if (j == arraySize - 1) {
-                            matrixTemp[i][j] = (divide(matrixOrig[j][matrixOrig.length - i - 1], matrixOrig[i][j - 1]));
-                        } else {
-                            matrixTemp[i][j] = (divide(matrixOrig[j][matrixOrig.length - i - 1], matrixOrig[i][j + 1] + matrixOrig[i][j - 1]));
-                        }
-                    } catch (DivideByZeroException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        outputWriter.write(dF.format(matrixTemp[i][j]) + " ");
-                    } catch (InputOutputException e) {
-                        e.printStackTrace();
-                    }
-                }
-                try {
-                    outputWriter.newLine();
-                } catch (InputOutputException e) {
-                    e.printStackTrace();
+            int[][] matrix = new int[n][n];
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    matrix[i][j] = scanner.nextInt();
                 }
             }
-            try {
-                outputWriter.write("Поворот на 180 градусов");
-                outputWriter.newLine();
-            } catch (InputOutputException e) {
-                e.printStackTrace();
-            }
-            for (int i = 0; i < arraySize; i++) {
-                for (int j = 0; j < arraySize; j++) {
-                    try {
-                        if (j == 0) {
-                            matrixOrig[i][j] = divide(matrixTemp[arraySize - i - 1][arraySize - j - 1], matrixTemp[i][j + 1]);
-                        } else if (j == arraySize - 1) {
-                            matrixOrig[i][j] = divide(matrixTemp[arraySize - i - 1][arraySize - j - 1], matrixTemp[i][j - 1]);
-                        } else {
-                            matrixOrig[i][j] = divide(matrixTemp[arraySize - i - 1][arraySize - j - 1], matrixTemp[i][j + 1] + matrixTemp[i][j - 1]);
-                        }
-                    } catch (DivideByZeroException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        outputWriter.write(dF.format(matrixTemp[i][j]) + " ");
-                    } catch (InputOutputException e) {
-                        e.printStackTrace();
-                    }
-                }
-                try {
-                    outputWriter.newLine();
-                } catch (InputOutputException e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                outputWriter.write("Поворот на 270 градусов");
-                outputWriter.newLine();
-            } catch (InputOutputException e) {
-                e.printStackTrace();
-            }
-            for (int i = 0; i < arraySize; i++) {
-                for (int j = 0; j < arraySize; j++) {
-                    try {
-                        if (j == 0) {
-                            matrixTemp[i][j] = divide(matrixOrig[matrixOrig.length - j - 1][i], (matrixOrig[i][j + 1]));
-                        } else if (j == arraySize - 1) {
-                            matrixTemp[i][j] = divide(matrixOrig[matrixOrig.length - j - 1][i], (matrixOrig[i][j - 1]));
-                        } else {
-                            matrixTemp[i][j] = divide(matrixOrig[matrixOrig.length - j - 1][i], (matrixOrig[i][j + 1] + matrixOrig[i][j - 1]));
-                        }
-                    } catch (DivideByZeroException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        outputWriter.write(dF.format(matrixTemp[i][j]) + " ");
-                    } catch (InputOutputException e) {
-                        e.printStackTrace();
-                    }
-                }
-                try {
-                    outputWriter.newLine();
-                } catch (InputOutputException e) {
-                    e.printStackTrace();
-                }
-            }
-            outputWriter.flush();
-            outputWriter.close();
-        } catch (OutOfMemoryError eLogTrue) {
-            logger.log(Level.SEVERE, "Логирование исключения по памяти", eLogTrue);
+            return matrix;
+        } catch (FileNotFoundException e) {
+            LOGGER.log(Level.WARNING, e.getMessage());
+            throw new InputOutputException(path);
+        } catch (OutOfMemoryError e) {
+            LOGGER.log(Level.WARNING, "Память закончилась");
+            return new int[0][0];
         }
     }
 
-    public static double divide(double a, double b) throws DivideByZeroException {
-        if (b == 0) {
-            throw new DivideByZeroException("нельзя делить на ноль ");
+    public int[][] createMatrix(int arraySize) {
+        if (arraySize < 1 || arraySize > 1_000_000) {
+            throw new BigNumException();
         }
-        return a / b;
+        int[][] matrix = new int[arraySize][arraySize];
+        for (int i = 0; i < arraySize; i++) {
+            for (int j = 0; j < arraySize; j++) {
+                matrix[i][j] = (int) (Math.random() * arraySize * 2) - arraySize;
+            }
+        }
+        return matrix;
     }
 
-    public static void checkNum(int a) throws BigNumException {
-        if (a > 1000000) {
-            throw new BigNumException("Число больше 1000000");
+    public int[][] rotate90(int[][] matrix) {
+        int[][] rotatedMatrix = new int[matrix.length][matrix.length];
+        for (int i = 0; i < rotatedMatrix.length; i++) {
+            for (int j = 0; j < rotatedMatrix.length; j++) {
+                rotatedMatrix[j][i] = matrix[matrix.length - i - 1][j];
+            }
         }
+        return rotatedMatrix;
     }
 
-    public static void checkIOFile(File file) throws InputOutputException {
-        if (!file.exists()) {
-            throw new InputOutputException("Файла нет");
+    public int[][] rotate180(int[][] matrix) {
+        int[][] rotatedMatrix = new int[matrix.length][matrix.length];
+        for (int i = 0; i < rotatedMatrix.length; i++) {
+            for (int j = 0; j < rotatedMatrix.length; j++) {
+                rotatedMatrix[j][i] = matrix[matrix.length - j - 1][matrix.length - i - 1];
+            }
         }
-        if (!file.canWrite()) {
-            throw new InputOutputException("Только для чтения");
+        return rotatedMatrix;
+    }
+
+    public int[][] rotate270(int[][] matrix) {
+        int[][] rotatedMatrix = new int[matrix.length][matrix.length];
+        for (int i = 0; i < rotatedMatrix.length; i++) {
+            for (int j = 0; j < rotatedMatrix.length; j++) {
+                rotatedMatrix[i][j] = matrix[j][matrix.length - i - 1];
+            }
+        }
+        return rotatedMatrix;
+    }
+
+    public int[][] devide(int[][] matrix) {
+        int[][] rotatedMatrix = matrix.clone();
+        for (int i = 1; i < matrix.length - 1; i++) {
+            for (int j = 1; j < matrix.length - 1; j++) {
+                int summ = rotatedMatrix[(i - 1 + matrix.length) % matrix.length][j]
+                        + rotatedMatrix[(i + 1) % matrix.length][j]
+                        + rotatedMatrix[i][(j - 1 + matrix.length) % matrix.length]
+                        + rotatedMatrix[i][(j + 1) % matrix.length];
+                if (summ == 0) {
+                    throw new DivideByZeroException();
+                }
+                rotatedMatrix[i][j] = rotatedMatrix[i][j] / summ;
+            }
+        }
+        return rotatedMatrix;
+    }
+
+    public void printMatrix(int[][] matrix, String path, boolean append) {
+        try (FileWriter writer = new FileWriter(path, append)) {
+            for (int[] ints : matrix) {
+                for (int j = 0; j < matrix.length; j++) {
+                    writer.write(ints[j] + " ");
+                }
+                writer.write("\n");
+            }
+            writer.write("---------------------------------\n");
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, e.getMessage());
+            throw new InputOutputException(path);
         }
     }
 }
