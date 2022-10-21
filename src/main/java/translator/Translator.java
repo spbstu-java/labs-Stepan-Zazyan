@@ -20,12 +20,6 @@ public class Translator {
                 String[] line = scannerDictionary.nextLine().split("\\|");
                 String key = line[0].trim().toLowerCase();
                 String value = line[1].trim().toLowerCase();
-                for (Map.Entry<String, String> entry : dictionary.entrySet()) {
-                    if ((key.contains(entry.getKey()) || entry.getKey().contains(key))
-                            && key.length() > entry.getKey().length()) {
-                        key = entry.getKey();
-                    }
-                }
                 dictionary.put(key, value);
             }
         } catch (FileNotFoundException e) {
@@ -50,10 +44,24 @@ public class Translator {
         } catch (FileNotFoundException e) {
             throw new FileNotFoundException("файл не найден во время переброса в строку");
         }
-        String translated = String.join(" ", list).toLowerCase();
-        for (Map.Entry<String, String> entry : dictionary.entrySet()) {
-            translated = translated.replace(entry.getKey(), entry.getValue());
+        String translated = "";
+        for (int i = 0; i < list.size(); i++) {
+            if (i != 0 && dictionary.containsKey(list.get(i - 1) + " " + list.get(i))) {
+                translated += dictionary.get(list.get(i - 1) + " " + list.get(i)) + " ";
+                i++;
+                continue;
+            }
+            if (i != list.size() - 1 && dictionary.containsKey(list.get(i) + " " + list.get(i + 1))) {
+                translated += dictionary.get(list.get(i) + " " + list.get(i + 1)) + " ";
+                i++;
+                continue;
+            }
+            if (dictionary.containsKey(list.get(i))) {
+                translated += dictionary.get(list.get(i)) + " ";
+            } else {
+                translated += list.get(i) + " ";
+            }
         }
-        return translated;
+        return translated.trim();
     }
 }
