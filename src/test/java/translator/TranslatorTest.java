@@ -23,7 +23,7 @@ class TranslatorTest {
         Translator translator = new Translator();
         translator.dictionaryToMap(pathDict);
         String result = translator.translateFile(pathText);
-        String exp = "i very like play в football на sports ground";
+        String exp = "i very very like play в football на sports ground";
         assertEquals(exp, result);
     }
 }
